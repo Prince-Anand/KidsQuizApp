@@ -367,7 +367,7 @@ function loadFlashcard() {
     
     // Update navigation buttons
     document.getElementById('prev-btn').disabled = currentFlashcards.currentIndex === 0;
-    document.getElementById('next-btn').disabled = currentFlashcards.currentIndex === currentFlashcards.cards.length - 1;
+    document.getElementById('flashcard-next-btn').disabled = currentFlashcards.currentIndex === currentFlashcards.cards.length - 1;
     
     updateFlashcardDots();
 }
