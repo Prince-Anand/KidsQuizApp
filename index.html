@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Quiz App for Kids</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Home Screen -->
+    <div id="home-screen" class="screen active">
+        <div class="container">
+            <div class="hero">
+                <div class="logo">🧠</div>
+                <h1>Smart Quiz</h1>
+                <p>Learn and have fun with interactive quizzes!</p>
+            </div>
+
+            <div class="user-stats">
+                <div class="avatar">👦</div>
+                <div class="user-info">
+                    <div class="name">Smart Kid</div>
+                    <div class="level">Level <span id="user-level">1</span></div>
+                </div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="total-score">0</div>
+                        <div class="stat-label">Score</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="streak">0</div>
+                        <div class="stat-label">Streak</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Action Buttons -->
+            <div class="main-actions">
+                <button onclick="showLearnScreen()" class="action-btn learn-btn">
+                    <div class="action-icon">📚</div>
+                    <h2>Learn</h2>
+                    <p>Study with flashcards</p>
+                </button>
+                
+                <button onclick="showQuizSelection()" class="action-btn quiz-btn">
+                    <div class="action-icon">🎯</div>
+                    <h2>Quiz</h2>
+                    <p>Test your knowledge</p>
+                </button>
+            </div>
+
+            <div class="secondary-actions">
+                <button onclick="showProgress()" class="btn btn-secondary">📊 View Progress</button>
+                <button onclick="showReview()" class="btn btn-secondary">🔄 Review Mistakes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Learn Screen -->
+    <div id="learn-screen" class="screen">
+        <div class="container">
+            <div class="screen-header">
+                <button onclick="goHome()" class="btn-back">← Back</button>
+                <h2>Choose Learning Mode</h2>
+            </div>
+
+            <div class="learn-options">
+                <button onclick="showSubjectFlashcards()" class="learn-option">
+                    <div class="learn-icon">📖</div>
+                    <h3>Study Flashcards</h3>
+                    <p>Learn with pre-made flashcards</p>
+                </button>
+                
+                <button onclick="showCustomFlashcards()" class="learn-option">
+                    <div class="learn-icon">✏️</div>
+                    <h3>Create Flashcards</h3>
+                    <p>Make your own study cards</p>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subject Flashcards Screen -->
+    <div id="subject-flashcards-screen" class="screen">
+        <div class="container">
+            <div class="screen-header">
+                <button onclick="showLearnScreen()" class="btn-back">← Back</button>
+                <h2>Choose Subject</h2>
+            </div>
+
+            <div class="subject-grid">
+                <button class="subject-card" onclick="startFlashcards('english')">
+                    <div class="subject-icon">📚</div>
+                    <h3>English</h3>
+                    <div class="flashcard-count">5 cards</div>
+                </button>
+
+                <button class="subject-card" onclick="startFlashcards('maths')">
+                    <div class="subject-icon">🔢</div>
+                    <h3>Mathematics</h3>
+                    <div class="flashcard-count">5 cards</div>
+                </button>
+
+                <button class="subject-card" onclick="startFlashcards('science')">
+                    <div class="subject-icon">🔬</div>
+                    <h3>Science</h3>
+                    <div class="flashcard-count">5 cards</div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flashcard Viewer Screen -->
+    <div id="flashcard-viewer-screen" class="screen">
+        <div class="container">
+            <div class="flashcard-header">
+                <button onclick="showSubjectFlashcards()" class="btn-back">← Back</button>
+                <div class="flashcard-info">
+                    <h2 id="flashcard-subject">English Flashcards</h2>
+                    <div class="flashcard-progress">
+                        Card <span id="current-card">1</span> of <span id="total-cards">5</span>
+                    </div>
+                </div>
+                <button onclick="shuffleFlashcards()" class="btn btn-secondary">🔀 Shuffle</button>
+            </div>
+
+            <div class="flashcard-container">
+                <div class="flashcard" id="flashcard" onclick="flipCard()">
+                    <div class="flashcard-front">
+                        <div class="flashcard-content">
+                            <h3 id="flashcard-question">Click to start!</h3>
+                            <p class="flip-hint">Tap to see answer</p>
+                        </div>
+                    </div>
+                    <div class="flashcard-back">
+                        <div class="flashcard-content">
+                            <p id="flashcard-answer">Answer will appear here</p>
+                            <p class="flip-hint">Tap to see question</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flashcard-controls">
+                <button onclick="previousCard()" class="btn btn-secondary" id="prev-btn">← Previous</button>
+                <button onclick="nextCard()" class="btn btn-primary" id="next-btn">Next →</button>
+            </div>
+
+            <div class="flashcard-dots" id="flashcard-dots">
+                <!-- Dots will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Flashcards Screen -->
+    <div id="custom-flashcards-screen" class="screen">
+        <div class="container">
+            <div class="screen-header">
+                <button onclick="showLearnScreen()" class="btn-back">← Back</button>
+                <h2>Create Your Flashcards</h2>
+            </div>
+
+            <div class="custom-flashcard-form">
+                <div class="form-group">
+                    <label for="custom-subject">Subject:</label>
+                    <select id="custom-subject">
+                        <option value="english">English</option>
+                        <option value="maths">Mathematics</option>
+                        <option value="science">Science</option>
+                        <option value="custom">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="custom-question">Question/Front:</label>
+                    <textarea id="custom-question" placeholder="Enter your question here..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="custom-answer">Answer/Back:</label>
+                    <textarea id="custom-answer" placeholder="Enter the answer here..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button onclick="addCustomFlashcard()" class="btn btn-primary">Add Flashcard</button>
+                    <button onclick="viewCustomFlashcards()" class="btn btn-secondary">View My Cards</button>
+                </div>
+            </div>
+
+            <div class="custom-flashcards-list" id="custom-flashcards-list">
+                <h3>Your Flashcards</h3>
+                <div id="custom-cards-container">
+                    <!-- Custom flashcards will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Selection Screen -->
+    <div id="quiz-selection-screen" class="screen">
+        <div class="container">
+            <div class="screen-header">
+                <button onclick="goHome()" class="btn-back">← Back</button>
+                <h2>Choose Quiz Subject</h2>
+            </div>
+
+            <div class="subject-grid">
+                <button class="subject-card" onclick="startQuiz('english')">
+                    <div class="subject-icon">📚</div>
+                    <h3>English</h3>
+                    <div class="subject-stats">
+                        <div>Level <span id="english-level">1</span></div>
+                        <div><span id="english-accuracy">0</span>% accuracy</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="english-progress"></div>
+                    </div>
+                </button>
+
+                <button class="subject-card" onclick="startQuiz('maths')">
+                    <div class="subject-icon">🔢</div>
+                    <h3>Mathematics</h3>
+                    <div class="subject-stats">
+                        <div>Level <span id="maths-level">1</span></div>
+                        <div><span id="maths-accuracy">0</span>% accuracy</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="maths-progress"></div>
+                    </div>
+                </button>
+
+                <button class="subject-card" onclick="startQuiz('science')">
+                    <div class="subject-icon">🔬</div>
+                    <h3>Science</h3>
+                    <div class="subject-stats">
+                        <div>Level <span id="science-level">1</span></div>
+                        <div><span id="science-accuracy">0</span>% accuracy</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="science-progress"></div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quiz-screen" class="screen">
+        <div class="container">
+            <div class="quiz-header">
+                <button onclick="goHome()" class="btn-back">← Back</button>
+                <div class="quiz-info">
+                    <h2 id="quiz-subject">English Quiz</h2>
+                    <div class="quiz-progress">
+                        Question <span id="current-question">1</span> of <span id="total-questions">5</span>
+                    </div>
+                </div>
+                <div class="timer" id="timer">30</div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="quiz-progress"></div>
+            </div>
+
+            <div class="question-card">
+                <div class="question-difficulty" id="question-difficulty">Easy</div>
+                <h3 id="question-text">Loading question...</h3>
+                <div class="options" id="options-container">
+                    <!-- Options will be inserted here -->
+                </div>
+                <div class="explanation hidden" id="explanation">
+                    <h4>Explanation:</h4>
+                    <p id="explanation-text"></p>
+                </div>
+            </div>
+
+            <div class="quiz-controls">
+                <button id="submit-btn" onclick="submitAnswer()" class="btn btn-primary" disabled>
+                    Submit Answer
+                </button>
+                <button id="next-btn" onclick="nextQuestion()" class="btn btn-primary hidden">
+                    Next Question
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="results-screen" class="screen">
+        <div class="container">
+            <div class="results-card">
+                <div class="results-icon" id="results-icon">🎉</div>
+                <h2 id="results-title">Great Job!</h2>
+                <div class="final-score" id="final-score">0</div>
+                <div class="results-stats">
+                    <div class="result-stat">
+                        <div class="result-value" id="correct-answers">0</div>
+                        <div class="result-label">Correct</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-value" id="accuracy-percent">0%</div>
+                        <div class="result-label">Accuracy</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-value" id="time-taken">0s</div>
+                        <div class="result-label">Avg Time</div>
+                    </div>
+                </div>
+                <div class="results-actions">
+                    <button onclick="restartQuiz()" class="btn btn-primary">Play Again</button>
+                    <button onclick="goHome()" class="btn btn-secondary">Home</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Screen -->
+    <div id="progress-screen" class="screen">
+        <div class="container">
+            <div class="screen-header">
+                <button onclick="goHome()" class="btn-back">← Back</button>
+                <h2>Your Progress</h2>
+            </div>
+
+            <div class="progress-overview">
+                <div class="progress-stat">
+                    <div class="progress-value" id="total-questions-answered">0</div>
+                    <div class="progress-label">Questions Answered</div>
+                </div>
+                <div class="progress-stat">
+                    <div class="progress-value" id="total-correct">0</div>
+                    <div class="progress-label">Correct Answers</div>
+                </div>
+                <div class="progress-stat">
+                    <div class="progress-value" id="overall-accuracy">0%</div>
+                    <div class="progress-label">Overall Accuracy</div>
+                </div>
+            </div>
+
+            <div class="subject-progress">
+                <h3>Subject Progress</h3>
+                <div id="subject-progress-list">
+                    <!-- Subject progress will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Screen -->
+    <div id="review-screen" class="screen">
+        <div class="container">
+            <div class="screen-header">
+                <button onclick="goHome()" class="btn-back">← Back</button>
+                <h2>Review Mistakes</h2>
+            </div>
+
+            <div class="review-controls">
+                <div class="filter-section">
+                    <h4>Quick Filters:</h4>
+                    <div class="filter-buttons">
+                        <button onclick="filterReview('all')" class="filter-btn active" data-filter="all">All</button>
+                        <button onclick="filterReview('english')" class="filter-btn" data-filter="english">📚 English</button>
+                        <button onclick="filterReview('maths')" class="filter-btn" data-filter="maths">🔢 Maths</button>
+                        <button onclick="filterReview('science')" class="filter-btn" data-filter="science">🔬 Science</button>
+                        <button onclick="filterReview('easy')" class="filter-btn" data-filter="easy">🟢 Easy</button>
+                        <button onclick="filterReview('medium')" class="filter-btn" data-filter="medium">🟡 Medium</button>
+                        <button onclick="filterReview('hard')" class="filter-btn" data-filter="hard">🔴 Hard</button>
+                    </div>
+                </div>
+
+                <div class="sort-controls">
+                    <label for="sort-select">Sort by:</label>
+                    <select id="sort-select" onchange="updateReviewScreen()">
+                        <option value="most-incorrect">Most Incorrect</option>
+                        <option value="recent">Most Recent</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="difficulty">Difficulty</option>
+                        <option value="subject">Subject</option>
+                    </select>
+                </div>
+                
+                <div class="practice-controls">
+                    <button onclick="showPracticeModal()" class="btn btn-primary" id="practice-btn">
+                        🎯 Practice Mistakes
+                    </button>
+                </div>
+            </div>
+
+            <div id="review-content">
+                <div class="review-empty">
+                    <div class="empty-icon">✅</div>
+                    <h3>No mistakes to review!</h3>
+                    <p>Keep up the great work!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Practice Modal -->
+    <div id="practice-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Practice Mistakes</h3>
+                <button onclick="closePracticeModal()" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <p>How many questions would you like to practice?</p>
+                <div class="practice-options">
+                    <button onclick="startPractice(5)" class="btn btn-secondary">5 Questions</button>
+                    <button onclick="startPractice(10)" class="btn btn-secondary">10 Questions</button>
+                    <button onclick="startPractice(15)" class="btn btn-secondary">15 Questions</button>
+                    <button onclick="startPractice(-1)" class="btn btn-primary">All Questions</button>
+                </div>
+                <div class="practice-info">
+                    <p>Questions will be ordered from most incorrect to least incorrect.</p>
+                    <p>Total mistakes available: <span id="total-mistakes">0</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Practice Screen -->
+    <div id="practice-screen" class="screen">
+        <div class="container">
+            <div class="quiz-header">
+                <button onclick="goHome()" class="btn-back">← Back</button>
+                <div class="quiz-info">
+                    <h2>Practice Mistakes</h2>
+                    <div class="quiz-progress">
+                        Question <span id="practice-current">1</span> of <span id="practice-total">5</span>
+                    </div>
+                </div>
+                <div class="timer" id="practice-timer">30</div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="practice-progress"></div>
+            </div>
+
+            <div class="question-card">
+                <div class="question-difficulty" id="practice-difficulty">Easy</div>
+                <div class="mistake-counter">
+                    Incorrect <span id="mistake-count">0</span> times
+                </div>
+                <h3 id="practice-question">Loading question...</h3>
+                <div class="options" id="practice-options">
+                    <!-- Options will be inserted here -->
+                </div>
+                <div class="explanation hidden" id="practice-explanation">
+                    <h4>Explanation:</h4>
+                    <p id="practice-explanation-text"></p>
+                </div>
+            </div>
+
+            <div class="quiz-controls">
+                <button id="practice-submit-btn" onclick="submitPracticeAnswer()" class="btn btn-primary" disabled>
+                    Submit Answer
+                </button>
+                <button id="practice-next-btn" onclick="nextPracticeQuestion()" class="btn btn-primary hidden">
+                    Next Question
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
