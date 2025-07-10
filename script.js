@@ -125,6 +125,48 @@ const questions = {
             difficulty: "hard",
             explanation: "There are 7 continents: Asia, Africa, North America, South America, Antarctica, Europe, and Australia/Oceania."
         }
+    ],
+    general: [
+        {
+            id: 16,
+            question: "What is the capital of France?",
+            options: ["London", "Berlin", "Paris", "Madrid"],
+            correct: 2,
+            difficulty: "easy",
+            explanation: "Paris is the capital and largest city of France, known for landmarks like the Eiffel Tower and Louvre Museum."
+        },
+        {
+            id: 17,
+            question: "Which animal is known as the 'King of the Jungle'?",
+            options: ["Tiger", "Lion", "Elephant", "Leopard"],
+            correct: 1,
+            difficulty: "easy",
+            explanation: "The lion is often called the 'King of the Jungle' even though lions actually live in grasslands, not jungles."
+        },
+        {
+            id: 18,
+            question: "How many sides does a triangle have?",
+            options: ["2", "3", "4", "5"],
+            correct: 1,
+            difficulty: "easy",
+            explanation: "A triangle is a polygon with three sides and three angles."
+        },
+        {
+            id: 19,
+            question: "What do bees make?",
+            options: ["Milk", "Honey", "Butter", "Cheese"],
+            correct: 1,
+            difficulty: "medium",
+            explanation: "Bees collect nectar from flowers and transform it into honey, which they store in their hives."
+        },
+        {
+            id: 20,
+            question: "Which country is famous for the Great Wall?",
+            options: ["Japan", "India", "China", "Korea"],
+            correct: 2,
+            difficulty: "medium",
+            explanation: "The Great Wall of China is a famous ancient fortification built across northern China to protect against invasions."
+        }
     ]
 };
 
@@ -150,6 +192,13 @@ const flashcards = {
         { question: "Who painted the Mona Lisa?", answer: "Leonardo da Vinci painted the Mona Lisa. He was an Italian artist, inventor, and scientist who lived from 1452 to 1519." },
         { question: "What is photosynthesis?", answer: "Photosynthesis is the process by which plants use sunlight, water, and carbon dioxide to make their own food (glucose) and release oxygen." },
         { question: "Which ocean is the largest?", answer: "The Pacific Ocean is the largest ocean on Earth. It covers about one-third of the Earth's surface!" }
+    ],
+    general: [
+        { question: "What is the capital of France?", answer: "Paris is the capital of France. It's famous for the Eiffel Tower, Louvre Museum, and delicious croissants!" },
+        { question: "Who painted the Mona Lisa?", answer: "Leonardo da Vinci painted the Mona Lisa. He was a famous Italian artist, inventor, and scientist from the Renaissance period." },
+        { question: "What is the largest mammal?", answer: "The Blue Whale is the largest mammal and the largest animal that has ever lived on Earth!" },
+        { question: "How many continents are there?", answer: "There are 7 continents: Asia, Africa, North America, South America, Antarctica, Europe, and Australia/Oceania." },
+        { question: "What do pandas mainly eat?", answer: "Pandas mainly eat bamboo! They can eat up to 40 pounds of bamboo per day." }
     ]
 };
 
@@ -240,11 +289,11 @@ function saveUserData() {
     const userData = {
         totalScore: parseInt(document.getElementById('total-score').textContent) || 0,
         streak: parseInt(document.getElementById('streak').textContent) || 0,
-        level: parseInt(document.getElementById('user-level').textContent) || 1,
         subjects: {
             english: getSubjectData('english'),
             maths: getSubjectData('maths'),
-            science: getSubjectData('science')
+            science: getSubjectData('science'),
+            general: getSubjectData('general')
         }
     };
     localStorage.setItem('quizUserData', JSON.stringify(userData));
@@ -256,24 +305,25 @@ function loadUserData() {
         const userData = JSON.parse(saved);
         document.getElementById('total-score').textContent = userData.totalScore || 0;
         document.getElementById('streak').textContent = userData.streak || 0;
-        document.getElementById('user-level').textContent = userData.level || 1;
         
         // Load subject data
         Object.keys(userData.subjects || {}).forEach(subject => {
             const data = userData.subjects[subject];
             if (data) {
-                document.getElementById(`${subject}-level`).textContent = data.level || 1;
                 document.getElementById(`${subject}-accuracy`).textContent = data.accuracy || 0;
-                document.getElementById(`${subject}-progress`).style.width = `${data.progress || 0}%`;
+                const progressEl = document.getElementById(`${subject}-progress`);
+                if (progressEl) {
+                    progressEl.style.width = `${data.progress || 0}%`;
+                }
             }
         });
     }
+    updateCustomCardCount();
 }
 
 function getSubjectData(subject) {
     return {
-        level: parseInt(document.getElementById(`${subject}-level`).textContent) || 1,
-        accuracy: parseInt(document.getElementById(`${subject}-accuracy`).textContent) || 0,
+        accuracy: parseInt(document.getElementById(`${subject}-accuracy`) ? document.getElementById(`${subject}-accuracy`).textContent : '0') || 0,
         progress: parseInt(document.getElementById(`${subject}-progress`).style.width) || 0,
         questionsAnswered: parseInt(localStorage.getItem(`${subject}_questions`) || '0'),
         correctAnswers: parseInt(localStorage.getItem(`${subject}_correct`) || '0')
@@ -282,17 +332,18 @@ function getSubjectData(subject) {
 
 function updateDisplay() {
     // Update subject progress
-    ['english', 'maths', 'science'].forEach(subject => {
+    ['english', 'maths', 'science', 'general'].forEach(subject => {
         const questionsAnswered = parseInt(localStorage.getItem(`${subject}_questions`) || '0');
         const correctAnswers = parseInt(localStorage.getItem(`${subject}_correct`) || '0');
         
         const accuracy = questionsAnswered > 0 ? Math.round((correctAnswers / questionsAnswered) * 100) : 0;
-        const level = Math.min(Math.floor(questionsAnswered / 3) + 1, 10);
         const progress = Math.min((questionsAnswered / 15) * 100, 100);
         
-        document.getElementById(`${subject}-level`).textContent = level;
-        document.getElementById(`${subject}-accuracy`).textContent = accuracy;
-        document.getElementById(`${subject}-progress`).style.width = `${progress}%`;
+        const accuracyEl = document.getElementById(`${subject}-accuracy`);
+        const progressEl = document.getElementById(`${subject}-progress`);
+        
+        if (accuracyEl) accuracyEl.textContent = accuracy;
+        if (progressEl) progressEl.style.width = `${progress}%`;
     });
     
     saveUserData();
@@ -342,11 +393,27 @@ function showReview() {
 // Flashcard Functions
 function startFlashcards(subject) {
     currentFlashcards.subject = subject;
-    currentFlashcards.cards = [...flashcards[subject]];
+    
+    if (subject === 'custom') {
+        // Load custom flashcards
+        const customCards = JSON.parse(localStorage.getItem('customFlashcards') || '[]');
+        if (customCards.length === 0) {
+            alert('No custom flashcards found! Create some first.');
+            return;
+        }
+        currentFlashcards.cards = customCards.map(card => ({
+            question: card.question,
+            answer: card.answer
+        }));
+        document.getElementById('flashcard-subject').textContent = 'Your Custom Flashcards';
+    } else {
+        currentFlashcards.cards = [...flashcards[subject]];
+        document.getElementById('flashcard-subject').textContent = `${capitalizeFirst(subject)} Flashcards`;
+    }
+    
     currentFlashcards.currentIndex = 0;
     currentFlashcards.isFlipped = false;
     
-    document.getElementById('flashcard-subject').textContent = `${capitalizeFirst(subject)} Flashcards`;
     document.getElementById('total-cards').textContent = currentFlashcards.cards.length;
     
     showScreen('flashcard-viewer-screen');
@@ -458,6 +525,7 @@ function addCustomFlashcard() {
     
     // Reload display
     loadCustomFlashcards();
+    updateCustomCardCount();
     
     alert('Flashcard added successfully!');
 }
@@ -489,6 +557,15 @@ function deleteCustomCard(id) {
         const filteredCards = customCards.filter(card => card.id !== id);
         localStorage.setItem('customFlashcards', JSON.stringify(filteredCards));
         loadCustomFlashcards();
+        updateCustomCardCount();
+    }
+}
+
+function updateCustomCardCount() {
+    const customCards = JSON.parse(localStorage.getItem('customFlashcards') || '[]');
+    const countEl = document.getElementById('custom-card-count');
+    if (countEl) {
+        countEl.textContent = `${customCards.length} cards`;
     }
 }
 
@@ -543,7 +620,7 @@ function loadQuestion() {
     document.getElementById('question-difficulty').textContent = capitalizeFirst(question.difficulty);
     document.getElementById('question-difficulty').className = `question-difficulty ${question.difficulty}`;
     document.getElementById('question-text').textContent = question.question;
-    document.getElementById('quiz-progress').style.width = `${((currentQuiz.currentIndex + 1) / currentQuiz.questions.length) * 100}%`;
+    document.getElementById('quiz-progress').style.width = `${(currentQuiz.currentIndex / currentQuiz.questions.length) * 100}%`;
     
     // Load options
     const optionsContainer = document.getElementById('options-container');
@@ -630,7 +707,10 @@ function nextQuestion() {
     if (currentQuiz.currentIndex < currentQuiz.questions.length) {
         loadQuestion();
     } else {
-        endQuiz();
+        // Auto-end quiz after 2 seconds for last question
+        setTimeout(() => {
+            endQuiz();
+        }, 2000);
     }
 }
 
@@ -648,12 +728,6 @@ function endQuiz() {
     
     localStorage.setItem(`${subject}_questions`, currentQuestions + currentQuiz.questions.length);
     localStorage.setItem(`${subject}_correct`, currentCorrect + currentQuiz.correctAnswers);
-    
-    // Update level
-    const totalQuestions = parseInt(localStorage.getItem('total_questions') || '0');
-    const newLevel = Math.floor((totalQuestions + currentQuiz.questions.length) / 15) + 1;
-    document.getElementById('user-level').textContent = newLevel;
-    localStorage.setItem('total_questions', totalQuestions + currentQuiz.questions.length);
     
     updateDisplay();
     showResults();
@@ -754,6 +828,11 @@ function timeUp() {
     // Update UI
     document.getElementById('submit-btn').style.display = 'none';
     document.getElementById('next-btn').classList.remove('hidden');
+    
+    // Auto-advance to next question after 3 seconds
+    setTimeout(() => {
+        nextQuestion();
+    }, 3000);
 }
 
 // Review System with HashMap
@@ -834,7 +913,7 @@ function filterReview(filterValue) {
     
     if (filterValue === 'all') {
         filteredQueue = reviewHashMap.get('all');
-    } else if (['english', 'maths', 'science'].includes(filterValue)) {
+    } else if (['english', 'maths', 'science', 'general'].includes(filterValue)) {
         filteredQueue = reviewHashMap.get(`subject_${filterValue}`) || [];
     } else if (['easy', 'medium', 'hard'].includes(filterValue)) {
         filteredQueue = reviewHashMap.get(`difficulty_${filterValue}`) || [];
@@ -1188,7 +1267,7 @@ function updateProgressScreen() {
     let totalQuestions = 0;
     let totalCorrect = 0;
     
-    ['english', 'maths', 'science'].forEach(subject => {
+    ['english', 'maths', 'science', 'general'].forEach(subject => {
         const questions = parseInt(localStorage.getItem(`${subject}_questions`) || '0');
         const correct = parseInt(localStorage.getItem(`${subject}_correct`) || '0');
         totalQuestions += questions;
@@ -1203,7 +1282,7 @@ function updateProgressScreen() {
     
     // Update subject progress list
     const progressList = document.getElementById('subject-progress-list');
-    progressList.innerHTML = ['english', 'maths', 'science'].map(subject => {
+    progressList.innerHTML = ['english', 'maths', 'science', 'general'].map(subject => {
         const questions = parseInt(localStorage.getItem(`${subject}_questions`) || '0');
         const correct = parseInt(localStorage.getItem(`${subject}_correct`) || '0');
         const accuracy = questions > 0 ? Math.round((correct / questions) * 100) : 0;

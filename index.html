@@ -20,7 +20,6 @@
                 <div class="avatar">👦</div>
                 <div class="user-info">
                     <div class="name">Smart Kid</div>
-                    <div class="level">Level <span id="user-level">1</span></div>
                 </div>
                 <div class="stats">
                     <div class="stat">
@@ -106,6 +105,18 @@
                     <h3>Science</h3>
                     <div class="flashcard-count">5 cards</div>
                 </button>
+
+                <button class="subject-card" onclick="startFlashcards('general')">
+                    <div class="subject-icon">🌍</div>
+                    <h3>General Knowledge</h3>
+                    <div class="flashcard-count">5 cards</div>
+                </button>
+
+                <button class="subject-card" onclick="startFlashcards('custom')">
+                    <div class="subject-icon">✏️</div>
+                    <h3>My Custom Cards</h3>
+                    <div class="flashcard-count" id="custom-card-count">0 cards</div>
+                </button>
             </div>
         </div>
     </div>
@@ -167,6 +178,7 @@
                         <option value="english">English</option>
                         <option value="maths">Mathematics</option>
                         <option value="science">Science</option>
+                        <option value="general">General Knowledge</option>
                         <option value="custom">Other</option>
                     </select>
                 </div>
@@ -209,7 +221,6 @@
                     <div class="subject-icon">📚</div>
                     <h3>English</h3>
                     <div class="subject-stats">
-                        <div>Level <span id="english-level">1</span></div>
                         <div><span id="english-accuracy">0</span>% accuracy</div>
                     </div>
                     <div class="progress-bar">
@@ -221,7 +232,6 @@
                     <div class="subject-icon">🔢</div>
                     <h3>Mathematics</h3>
                     <div class="subject-stats">
-                        <div>Level <span id="maths-level">1</span></div>
                         <div><span id="maths-accuracy">0</span>% accuracy</div>
                     </div>
                     <div class="progress-bar">
@@ -233,11 +243,21 @@
                     <div class="subject-icon">🔬</div>
                     <h3>Science</h3>
                     <div class="subject-stats">
-                        <div>Level <span id="science-level">1</span></div>
                         <div><span id="science-accuracy">0</span>% accuracy</div>
                     </div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="science-progress"></div>
+                    </div>
+                </button>
+
+                <button class="subject-card" onclick="startQuiz('general')">
+                    <div class="subject-icon">🌍</div>
+                    <h3>General Knowledge</h3>
+                    <div class="subject-stats">
+                        <div><span id="general-accuracy">0</span>% accuracy</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="general-progress"></div>
                     </div>
                 </button>
             </div>
@@ -308,7 +328,7 @@
                 </div>
                 <div class="results-actions">
                     <button onclick="restartQuiz()" class="btn btn-primary">Play Again</button>
-                    <button onclick="goHome()" class="btn btn-secondary">Home</button>
+                    <button onclick="goHome()" class="btn btn-secondary">Back to Home</button>
                 </div>
             </div>
         </div>
@@ -362,6 +382,7 @@
                         <button onclick="filterReview('english')" class="filter-btn" data-filter="english">📚 English</button>
                         <button onclick="filterReview('maths')" class="filter-btn" data-filter="maths">🔢 Maths</button>
                         <button onclick="filterReview('science')" class="filter-btn" data-filter="science">🔬 Science</button>
+                        <button onclick="filterReview('general')" class="filter-btn" data-filter="general">🌍 General</button>
                         <button onclick="filterReview('easy')" class="filter-btn" data-filter="easy">🟢 Easy</button>
                         <button onclick="filterReview('medium')" class="filter-btn" data-filter="medium">🟡 Medium</button>
                         <button onclick="filterReview('hard')" class="filter-btn" data-filter="hard">🔴 Hard</button>
