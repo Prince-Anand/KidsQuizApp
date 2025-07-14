@@ -1,4 +1,4 @@
-# KidsQuizApp
+# Smart Kids Quiz and Learning App (Smart Quiz)
 
 
 ## These are the features - 
